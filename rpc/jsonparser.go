@@ -2,6 +2,8 @@ package rpc
 
 import (
 	//"encoding/json"
+	"fmt"
+	"TVStorageManager/json"
 )
 
 
@@ -19,7 +21,12 @@ func Parse(json string) (interface{}, bool) {
 	}
 }
 
-func ParseJson(json string) interface{} {
-
-	return nil
+func ParseJson(jsonstr string) interface{} {
+	result, err := json.JsonParser([]byte(jsonstr))
+	if result != nil {
+		return result
+	} else {
+		fmt.Println("Error ParseJson: ", err.Error())
+		return nil
+	}
 }
