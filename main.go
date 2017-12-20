@@ -2,6 +2,7 @@ package main
 
 import (
   "TVStorageManager/rpc"
+  "TVStorageManager/test"
   "time"
   "fmt"
   "os/exec"
@@ -29,6 +30,8 @@ func main() {
 
 	// boot rpc service
 	go rpc.StartRpcServer()
+
+	test.IpfsTest()
 
   	for {
 		time.Sleep(1000)
