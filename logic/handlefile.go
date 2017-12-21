@@ -1,55 +1,78 @@
 package logic
 
 import (
-	"bytes"
-	"fmt"
-	"io"
-	"io/ioutil"
-	"mime/multipart"
-	"net/http"
-	"os"
-)
+    "os"
+    "bytes"
+    "io"
+    "mime/multipart"
+    "net/http"
+  )
 
+//upload file
+func UploadFile(filename string) (response string, err error) {
+	buf := &bytes.Buffer{}
+    w := multipart.NewWriter(buf)
 
-func UploadFile(filename string, targetUrl string) error {
-	bodyBuf := &bytes.Buffer{}
-    bodyWriter := multipart.NewWriter(bodyBuf)
-
-    fileWriter, err := bodyWriter.CreateFormFile("uploadfile", filename)
+    fileWriter, err := w.CreateFormFile("uploadfile", filename)
     if err != nil {
-        return err
+        panic(err)
     }
 
     fh, err := os.Open(filename)
     if err != nil {
-        return err
+        panic(err)
     }
+    defer fh.Close()
 
     //iocopy
     _, err = io.Copy(fileWriter, fh)
     if err != nil {
-        return err
+        panic(err)
+    }
+    w.Close()
+
+    request, err := http.NewRequest("POST","http://localhost:5001/api/v0/add", buf)
+    if err !=nil {
+        panic(err)
     }
 
-    contentType := bodyWriter.FormDataContentType()
-    bodyWriter.Close()
+    request.Header.Set("Content-Type", w.FormDataContentType())
+    var client http.Client
+    res, err := client.Do(request)
+    if err != nil {
+        panic(err)
+    }
 
-    resp, err := http.Post(targetUrl, contentType, bodyBuf)
-    if err != nil {
-        return err
-    }
-    defer resp.Body.Close()
-    resp_body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return err
-    }
-    fmt.Println(resp.Status)
-    fmt.Println(string(resp_body))
-    return nil
+    resbuf := new(bytes.Buffer) 
+	resbuf.ReadFrom(res.Body)
+    response = resbuf.String()
+    return
 }
 
-func DownloadFile(hash string) {
+//download file
+func DownloadFile(hash string, filepath string) (err error) {
+    buf := new(bytes.Buffer) 
+    r := multipart.NewWriter(buf)
+    defer r.Close()
 
+    request, err := http.NewRequest("POST", "http://localhost:5001/api/v0/cat?arg=" + hash, buf)
+    if err !=nil {
+        panic(err)
+    }
+
+    var client http.Client
+    response, err := client.Do(request)
+    if err != nil {
+        panic(err)
+    }
+
+    file, err := os.Create(filepath)
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+    io.Copy(file, response.Body)
+    return err
 }
 
 
