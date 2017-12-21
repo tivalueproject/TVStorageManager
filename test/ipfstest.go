@@ -16,7 +16,6 @@ func IpfsTest() {
     if err != nil {
     	panic(err)
     }
-	const jsonStream = `{"jsonrpc":"2.0","id":1,"method":"login","params":["username","password"]}`
 	result, _ := json.JsonParser([]byte(response))
 	if err != nil {
     	panic(err)
