@@ -16,7 +16,7 @@ type SocketConfig struct {
 // DefaultSocketConfig.
 var DefaultSocketConfig = SocketConfig{
   rpcAddress:  "127.0.0.1:60000",
-  tvRpcAddress : "127.0.0.1:63695",
+  tvRpcAddress : "127.0.0.1:64696",
 }
 
 func StartRpcServer() {

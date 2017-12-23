@@ -92,3 +92,15 @@ func (j *Json) Int() (int, error) {
 	}
 	return 0, errors.New("invalid value type")
 }
+
+func GenerateJsonString(method string, params interface{}) string {
+	var s = make(map[string]interface{})
+	s["jsonrpc"] = "2.0"
+	s["id"] = 1
+	s["method"] = method
+	s["params"] = params
+	result, _ := json.Marshal(s)
+	return string(result)
+}
+
+
