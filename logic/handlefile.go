@@ -9,7 +9,7 @@ import (
   )
 
 //upload file
-func UploadFile(filename string) (response string, err error) {
+func Upload(filename string) (response string, err error) {
 	buf := &bytes.Buffer{}
     w := multipart.NewWriter(buf)
 
@@ -50,7 +50,7 @@ func UploadFile(filename string) (response string, err error) {
 }
 
 //download file
-func DownloadFile(hash string, filepath string) (err error) {
+func Download(hash string, filepath string) (err error) {
     buf := new(bytes.Buffer) 
     r := multipart.NewWriter(buf)
     defer r.Close()

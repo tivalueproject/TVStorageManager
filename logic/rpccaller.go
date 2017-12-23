@@ -8,5 +8,5 @@ import (
 func CallRpc(request string, conn net.Conn)(response string) {
     fmt.Fprintf(conn, request)
     response, _ = network.Read(conn)
-    return
+    return response
 }
