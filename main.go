@@ -34,7 +34,7 @@ func main() {
 	test.IpfsTest()
 
   	for {
-		time.Sleep(1000)
+		time.Sleep(10000)
   	}
 
 }
