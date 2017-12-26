@@ -34,7 +34,7 @@ func IpfsTest() {
 
 //客户端上传文件代码：
  func Upload(filepath string) (response string, err error) {
-    
+
     response = ""
     // Create buffer
     buf := new(bytes.Buffer) // caveat IMO dont use this for large files, \
@@ -69,7 +69,7 @@ func IpfsTest() {
         panic(err)
     }
 
-    resbuf := new(bytes.Buffer) 
+    resbuf := new(bytes.Buffer)
 	resbuf.ReadFrom(res.Body)
 	response = resbuf.String()
     io.Copy(os.Stdout, res.Body) // Replace this with Status.Code check
