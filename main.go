@@ -19,6 +19,7 @@ func main() {
     tvIn.Close()
     tvOut.Close()
 
+	
 	// boot ipfs
     ipfsCmd := exec.Command("ipfs.exe", "daemon")
     ipfsIn, _ := ipfsCmd.StdinPipe()
