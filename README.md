@@ -1,2 +1,2 @@
-This is the storage manager of TiValue
+This is the storage manager of TiValue.
 
