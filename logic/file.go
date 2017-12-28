@@ -10,7 +10,7 @@ type RequestId struct {
 //
 type Piece struct {
 	Id    string  `json:"piece_id"`
-	Size  int     `json:"piece_size"`
+	Size  int64   `json:"piece_size"`
 	Price float64 `json:"price"`
 }
 
@@ -18,9 +18,9 @@ type Piece struct {
 type RequestInfo struct {
 	Id          RequestId `json:"id"`
 	Pieces      []Piece   `json:"pieces"`
-	Copies      int       `json:"num_of_copies"`
+	Copies      int64     `json:"num_of_copies"`
 	NodeId      string    `json:"node_id"`
-	FileName    string    `json:"file_name"`
+	FileName    string    `json:"filename"`
 	Description string    `json:"description"`
 }
 
