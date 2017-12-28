@@ -33,8 +33,6 @@ type TVFileInfo struct {
 	Pieces      []Piece  `json:"pieces"`
 	Copies      int      `json:"copies"`
 	Price       float64  `json:"price"`
-	Uploader    string   `json:"uploader"`
-	Contract    string   `json:"contract"`
 	Description string   `json:"description"`
 }
 
