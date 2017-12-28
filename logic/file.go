@@ -34,5 +34,6 @@ type TVFileInfo struct {
 	Copies      int      `json:"copies"`
 	Price       float64  `json:"price"`
 	Description string   `json:"description"`
+	NodeId      string   `json:"node_id"`
 }
 
