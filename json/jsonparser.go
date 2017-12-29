@@ -102,5 +102,3 @@ func GenerateJsonString(method string, params interface{}) string {
 	result, _ := json.Marshal(s)
 	return string(result)
 }
-
-
