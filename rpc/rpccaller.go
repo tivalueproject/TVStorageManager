@@ -1,4 +1,4 @@
-package logic
+package rpc
 
 import (
     "net"

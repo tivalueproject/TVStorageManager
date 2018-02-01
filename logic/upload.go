@@ -4,10 +4,14 @@ import (
 	//"strconv"
 	"os"
 	"net"
-	"TVStorageManager/json"	
-	json2 "encoding/json"
+	//"TVStorageManager/json"	
+	//json2 "encoding/json"
 	"fmt"
+
+
+
 )
+
 
 const (
 	MinPieceSize int64 = 4096
@@ -56,50 +60,50 @@ func Slice(filename string, pieces int) {
 	}
 }
 
-//upload file
-func UploadFile(filename string, piecesize int, pieces int,price float64, conn net.Conn) (response string) {	
-	info, _ := os.Stat(filename)
-	tvFileInfo := TVFileInfo{}
-	tvFileInfo.FileName = info.Name()
-	tvFileInfo.FileSize = info.Size()
-	tvFileInfo.FileHash = "file_hash"
-	tvFileInfo.Copies = 1
-	tvFileInfo.Price = price
-	tvFileInfo.Description = "my_description"
-	tvFileInfo.Uploader = "TV3HtJtjsyZTQcAZyVZdrL79MMdx6zkfaSy"
-	tvFileInfo.Contract = "CONAZ6B5WC2zybXq4UiEF57Lb9cvRNsY5Gjx"
-	tvFileInfo.Pieces = make([]Piece, pieces)
+// //upload file
+// func UploadFile(filename string, piecesize int, pieces int,price float64, conn net.Conn) (response string) {	
+// 	info, _ := os.Stat(filename)
+// 	tvFileInfo := TVFileInfo{}
+// 	tvFileInfo.FileName = info.Name()
+// 	tvFileInfo.FileSize = info.Size()
+// 	tvFileInfo.FileHash = "file_hash"
+// 	tvFileInfo.Copies = 1
+// 	tvFileInfo.Price = price
+// 	tvFileInfo.Description = "my_description"
+// 	tvFileInfo.Uploader = "TV3HtJtjsyZTQcAZyVZdrL79MMdx6zkfaSy"
+// 	tvFileInfo.Contract = "CONAZ6B5WC2zybXq4UiEF57Lb9cvRNsY5Gjx"
+// 	tvFileInfo.Pieces = make([]Piece, pieces)
 
-	//slice file
-	piecesize = int(info.Size())
-	for i := 0; i < pieces; i++ {
-		resp, err := Upload(filename)
-		if err != nil {
-			panic(err)
-		}
-		result, _ := json.JsonParser([]byte(resp))
-		if err != nil {
-			panic(err)
-		}			
-		hash, _ := result.Get("Hash").String()
-		//size, _ := result.Get("Size").String()
-		piece := Piece{}	
-		piece.Id = hash
-		piece.Size = int(info.Size())
-		piece.Price = price / float64(pieces)
-		tvFileInfo.Pieces[i] = piece
-	}
-	str, err := json2.Marshal(tvFileInfo)
-	if err != nil {
-		panic(err)
-	}
-	str1 := "{\"jsonrpc\":\"2.0\",\"method\":\"store_file_to_network\",\"id\":1,\"params\":["
-	str2 := "]}"
-	str3 := str1  + string(str)[1:len(string(str))-1]+ str2
-	fmt.Println(string(str3))
+// 	//slice file
+// 	piecesize = int(info.Size())
+// 	for i := 0; i < pieces; i++ {
+// 		resp, err := Upload(filename)
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 		result, _ := json.JsonParser([]byte(resp))
+// 		if err != nil {
+// 			panic(err)
+// 		}			
+// 		hash, _ := result.Get("Hash").String()
+// 		//size, _ := result.Get("Size").String()
+// 		piece := Piece{}	
+// 		piece.Id = hash
+// 		piece.Size = int(info.Size())
+// 		piece.Price = price / float64(pieces)
+// 		tvFileInfo.Pieces[i] = piece
+// 	}
+// 	str, err := json2.Marshal(tvFileInfo)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	str1 := "{\"jsonrpc\":\"2.0\",\"method\":\"store_file_to_network\",\"id\":1,\"params\":["
+// 	str2 := "]}"
+// 	str3 := str1  + string(str)[1:len(string(str))-1]+ str2
+// 	fmt.Println(string(str3))
 
-	return CallRpc(str3, conn)
-}
+// 	return CallRpc(str3, conn)
+// }
 
 //list upload requests
 func ListUploadedRequests(conn net.Conn)(response string) {

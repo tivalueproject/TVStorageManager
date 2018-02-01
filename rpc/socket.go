@@ -4,7 +4,7 @@ import (
 	//"encoding/json"
 	"fmt"
 	"TVStorageManager/network"
-  "TVStorageManager/logic"
+  //"TVStorageManager/logic"
 )
 
 
@@ -16,10 +16,13 @@ type SocketConfig struct {
 // DefaultSocketConfig.
 var DefaultSocketConfig = SocketConfig{
   rpcAddress:  "127.0.0.1:60000",
-  tvRpcAddress : "127.0.0.1:64696",
+  tvRpcAddress : "127.0.0.1:63695",
 }
 
 func StartRpcServer() {
+
+  InitRpcInterFaces()
+
 
   listener, err := network.Listen(DefaultSocketConfig.rpcAddress)
   if err != nil {
@@ -46,11 +49,11 @@ func StartRpcServer() {
       for err == nil {
         fmt.Println("Request from QT: " + requests)
 
-        // Parse
-        parsedRequest, isPassThrough := Parse(requests)
+        // ParseAndVerify
+        parsedRequest, method := ParseVerify(requests)
 
         // Process by logic layer 
-        response := logic.ProcessRpcRequest(parsedRequest, isPassThrough, connTv )
+        response := ProcessRpcRequest(parsedRequest, method, connTv )
 
         // Send a response back to person contacting us.
         conn.Write( []byte( response))
