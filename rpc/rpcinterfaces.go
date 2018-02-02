@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"TVStorageManager/json"
 	"net"
+	"TVStorageManager/logic"
 )
 
 
@@ -301,8 +302,52 @@ func RpcPassThrough(request *json.Json, tvConn net.Conn)(response string) {
 }
 
 func UploadFileToIPFS(request *json.Json, tvConn net.Conn)(response string) {
-
 	fmt.Println("UploadFileToIPFS called ")
+	params, _ := request.Get("params").Array()
+	response, _ = logic.UploadFileToIPFS(params[0].(string), tvConn)
+	return
+}
+
+func DeclareUploadFile(request *json.Json, tvConn net.Conn)(response string) {
+	fmt.Println("DeclareUploadFile called ")
+	method, _ := request.Get("method").String()
+	params, _ := request.Get("params").Array()
+	if method == "DeclareUploadFile" {
+		method = "store_file_to_network"
+	}
+	requestStr := json.GenerateJsonString(method, params)
+	response, _ = logic.DeclareUploadFile(requestStr, tvConn)
+	return
+}
+
+func ListUploadDeclaration(request *json.Json, tvConn net.Conn)(response string) {
+	fmt.Println("ListUploadDeclaration called ")
+	method, _ := request.Get("method").String()
+	params, _ := request.Get("params").Array()
+	if method == "ListUploadDeclaration" {
+		method = "blockchain_get__upload_requests"
+	}
+	requestStr := json.GenerateJsonString(method, params)
+	response, _ = logic.DeclareUploadFile(requestStr, tvConn)
+	return
+}
+
+func PinAddFileToLocal(request *json.Json, tvConn net.Conn)(response string) {
+	fmt.Println("PinAddFileToLocal called ")
+	params, _ := request.Get("params").Array()
+	response, _ = logic.PinAddFileToLocal(params[0].(string), tvConn)
+	return
+}
+
+func DeclarePieceSaved(request *json.Json, tvConn net.Conn)(response string) {
+	fmt.Println("DeclarePieceSaved called ")
+	method, _ := request.Get("method").String()
+	params, _ := request.Get("params").Array()
+	if method == "DeclarePieceSaved" {
+		method = "declare_piece_saved"
+	}
+	requestStr := json.GenerateJsonString(method, params)
+	response, _ = logic.DeclarePieceSaved(requestStr, tvConn)
 	return
 }
 

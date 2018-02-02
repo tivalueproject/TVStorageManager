@@ -1,15 +1,14 @@
 package logic
 
 import (
-	//"strconv"
+	"strconv"
 	"os"
 	"net"
-	//"TVStorageManager/json"	
-	//json2 "encoding/json"
+	myjson "TVStorageManager/json"	
+	//"encoding/json"
 	"fmt"
-
-
-
+	"TVStorageManager/rpc"
+	"TVStorageManager/common"
 )
 
 
@@ -60,62 +59,68 @@ func Slice(filename string, pieces int) {
 	}
 }
 
-// //upload file
-// func UploadFile(filename string, piecesize int, pieces int,price float64, conn net.Conn) (response string) {	
-// 	info, _ := os.Stat(filename)
-// 	tvFileInfo := TVFileInfo{}
-// 	tvFileInfo.FileName = info.Name()
-// 	tvFileInfo.FileSize = info.Size()
-// 	tvFileInfo.FileHash = "file_hash"
-// 	tvFileInfo.Copies = 1
-// 	tvFileInfo.Price = price
-// 	tvFileInfo.Description = "my_description"
-// 	tvFileInfo.Uploader = "TV3HtJtjsyZTQcAZyVZdrL79MMdx6zkfaSy"
-// 	tvFileInfo.Contract = "CONAZ6B5WC2zybXq4UiEF57Lb9cvRNsY5Gjx"
-// 	tvFileInfo.Pieces = make([]Piece, pieces)
+//upload file to local ipfs
+func UploadFileToIPFS(file_name string, conn net.Conn)(res string, err error) {
+	resp, stat_code, err := Upload(file_name)
+	if 200 != stat_code {
+		panic(err)
+	}
+	result, _ := myjson.JsonParser([]byte(resp))
+	if err != nil {
+    	panic(err)
+    }
+	name, _ := result.Get("Name").String()
+	hash, _ := result.Get("Hash").String()
+	size, _ := result.Get("Size").String()
+	res = "{\"id\":\"1\",\"file_name\":\"" + name + "\",\"file_hash\":\"" + hash + "\",\"file_size\":\"" + size + "\",status_code:\"" + strconv.Itoa(stat_code) + "\"}"
+	return res, nil
+}
 
-// 	//slice file
-// 	piecesize = int(info.Size())
-// 	for i := 0; i < pieces; i++ {
-// 		resp, err := Upload(filename)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-// 		result, _ := json.JsonParser([]byte(resp))
-// 		if err != nil {
-// 			panic(err)
-// 		}			
-// 		hash, _ := result.Get("Hash").String()
-// 		//size, _ := result.Get("Size").String()
-// 		piece := Piece{}	
-// 		piece.Id = hash
-// 		piece.Size = int(info.Size())
-// 		piece.Price = price / float64(pieces)
-// 		tvFileInfo.Pieces[i] = piece
-// 	}
-// 	str, err := json2.Marshal(tvFileInfo)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	str1 := "{\"jsonrpc\":\"2.0\",\"method\":\"store_file_to_network\",\"id\":1,\"params\":["
-// 	str2 := "]}"
-// 	str3 := str1  + string(str)[1:len(string(str))-1]+ str2
-// 	fmt.Println(string(str3))
+//
+func DeclareUploadFile(json_prc_str string, conn net.Conn) (res string, err error) {
+	tv_res := rpc.CallRpc(json_prc_str, conn)
+	return tv_res, nil
+}
 
-// 	return CallRpc(str3, conn)
-// }
+//list uploaded declaration
+func ListUploadDeclaration(json_rpc_str string, conn net.Conn)(res string, err error) {
+	tv_res := rpc.CallRpc(json_rpc_str, conn)
+	return tv_res, nil
+}
+
+//pin file to local
+func PinAddFileToLocal(hash string, conn net.Conn)(res string, err error) {
+	resp, stat_code, err := PinAdd(hash)
+	if 200 != stat_code {
+		panic(err)
+	}
+	result, _ := myjson.JsonParser([]byte(resp))
+	if err != nil {
+    	panic(err)
+	}
+	obj, _ := result.Get("Pins").String()
+	res = "{\"id\":\"1\",\"pins\":\"" + obj + "\""+ ",\"status_code\":\"" + strconv.Itoa(stat_code) + "\"}"
+	return res, nil
+}
+
+//declare piece saveds
+func DeclarePieceSaved(json_rpc_str string, conn net.Conn) (res string, err error) {
+	tv_res := rpc.CallRpc(json_rpc_str, conn)
+	return tv_res, nil
+}
+
 
 //list upload requests
 func ListUploadedRequests(conn net.Conn)(response string) {
-	strjson := "{\"jsonrpc\":\"2.0\",\"method\":\"list_upload_requests\",\"params\":\"[]\",\"id\":1}"
-	resp := CallRpc(strjson, conn)
+	strjson := "{\"jsonrpc\":\"2.0\",\"method\":\"list_upload_requests\",\"params\":\"[]\",\"id\":\"1\"}"
+	resp := rpc.CallRpc(strjson, conn)
 	return resp
 }
 
 //save piece
 func SavePiece(params []string, conn net.Conn)(resp string) {
 	strjson := ""
-	return CallRpc(strjson, conn)
+	return rpc.CallRpc(strjson, conn)
 }
 
 //list store request
@@ -125,11 +130,6 @@ func SavePiece(params []string, conn net.Conn)(resp string) {
 
  //allow save
  func AllowSave(conn net.Conn) {
-
- }
-
- //declare piece saved
- func DeclarePieceSaved(conn net.Conn) {
 
  }
 
