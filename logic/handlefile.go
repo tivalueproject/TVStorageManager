@@ -6,7 +6,7 @@ import (
     "io"
     "mime/multipart"
     "net/http"
-    "strconv"
+    //"strconv"
   )
 
 //upload file

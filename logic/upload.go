@@ -126,9 +126,7 @@ func SavePiece(params []string, conn net.Conn)(resp string) {
 //list store request
 func ListStoreRequest(jsonStr string, conn net.Conn) (resp string) {
 	var resJson string
-	fmt.Println("call before: ", jsonStr)
 	response := network.CallRpc(jsonStr, conn)
-	fmt.Println("call after: ", response)
 	res, _ := myJson.JsonParser([]byte(response))
 	if res != nil {
 		resArr, _ := res.Get("result").Array()
@@ -136,7 +134,6 @@ func ListStoreRequest(jsonStr string, conn net.Conn) (resp string) {
 			resMapStr, _ := json.Marshal(resArr[i])
 			var storeRes common.StoreFileResult
 			json.Unmarshal(resMapStr, &storeRes)
-			fmt.Println("fileId: ", storeRes.FileId.FileId)
 			nodes := storeRes.Nodes
 			if (nodes != nil) {
 				for j := 0; j < len(nodes); j++ {
@@ -148,7 +145,6 @@ func ListStoreRequest(jsonStr string, conn net.Conn) (resp string) {
 					s["key"] = storeNode.NodeKey
 					result, _ := json.Marshal(s)
 					resJson = string(result)
-					fmt.Println("result: ", resJson)
 				}
 			}
 		}

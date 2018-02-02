@@ -5,7 +5,7 @@ import (
 	"TVStorageManager/network"	
 )
 
-func ListSavedFile(jsonStr string, conn net.Conn) (resp string) {
+func ListConfirmSavedFile(jsonStr string, conn net.Conn) (resp string) {
 	response := network.CallRpc(jsonStr, conn)
 	return response
  }
