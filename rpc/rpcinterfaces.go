@@ -21,6 +21,10 @@ func InitRpcInterFaces() {
 	rpcInterFaceTable = make(map[string]RpcInterFace)
 
 	rpcInterFaceTable["UploadFileToIPFS"] = RpcInterFace{"UploadFileToIPFS", UploadFileToIPFS, false}
+	rpcInterFaceTable["DeclareUploadFile"] = RpcInterFace{"DeclareUploadFile", UploadFileToIPFS, false}
+	rpcInterFaceTable["ListUploadDeclaration"] = RpcInterFace{"ListUploadDeclaration", UploadFileToIPFS, false}
+	rpcInterFaceTable["PinAddFileToLocal"] = RpcInterFace{"PinAddFileToLocal", UploadFileToIPFS, false}
+	rpcInterFaceTable["DeclarePieceSaved"] = RpcInterFace{"DeclarePieceSaved", UploadFileToIPFS, false}
 	rpcInterFaceTable["DeclareUploadFile"] = RpcInterFace{"DeclareUploadFile", DeclareUploadFile, false}
 
 	// the tv rpc interface for pass through
