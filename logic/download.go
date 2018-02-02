@@ -2,21 +2,33 @@ package logic
 
 import (
 	"net"
-	"TVStorageManager/network"	
+	"TVStorageManager/network"
+	myJson "TVStorageManager/json"
+	"encoding/json"
+	"fmt"	
 )
 
-func ListConfirmSavedFile(jsonStr string, conn net.Conn) (resp string) {
-	response := network.CallRpc(jsonStr, conn)
-	return response
+func ListConfirmSavedFile(jsonStr string, conn net.Conn) (response string) {
+	response = network.CallRpc(jsonStr, conn)
+	return
  }
 
-// func GenerateDownloadValidation(params []string, conn net.Conn)(response string) {
-// 	var strjson string
-// 	if params != nil {
-// 		strjson := TVJson.GenerateJsonString("generate_download_validation", params)
-// 	}
- 	
-// 	resp := CallRpc(strjson, conn)
-// 	return resp
-// }
+//cat file to local
+func DownloadFileToLocal(hash string, conn net.Conn)(resJson string) {
+	resp, stat_code, err := Download(hash)
+	if 200 != stat_code {
+		panic(err)
+	}
+	fmt.Println(resp)
+	fmt.Println(stat_code)
+	res, _ := myJson.JsonParser([]byte(resp))
+	if res != nil {
+		var s = make(map[string]interface{})
+		s["status"] = stat_code
+		s["data"] = resp
+		result, _ := json.Marshal(s)
+		resJson = string(result)
+	}
+	return 
+}
 

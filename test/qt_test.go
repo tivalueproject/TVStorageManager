@@ -161,28 +161,64 @@ import (
 // 	}
 // }
 
-func TestListConfirmFileSaved(t * testing.T) {
-	const login = `{"jsonrpc":"2.0","id":1,"method":"login","params":["admin","btc123"]}`
-	const open = `{"jsonrpc":"2.0","id":1,"method":"open","params":["storage"]}`
-	const unlock = `{"jsonrpc":"2.0","id":1,"method":"unlock","params":[999999, "kg.com123"]}`
-	const request = `{"jsonrpc":"2.0","id":2,"method":"ListConfirmFileSaved","params":[]}`
+// func TestListConfirmFileSaved(t * testing.T) {
+// 	const login = `{"jsonrpc":"2.0","id":1,"method":"login","params":["admin","btc123"]}`
+// 	const open = `{"jsonrpc":"2.0","id":1,"method":"open","params":["storage"]}`
+// 	const unlock = `{"jsonrpc":"2.0","id":1,"method":"unlock","params":[999999, "kg.com123"]}`
+// 	const request = `{"jsonrpc":"2.0","id":2,"method":"ListConfirmFileSaved","params":[]}`
+// 	connTv, err := network.ConnectTo("127.0.0.1:60000")
+// 	if err == nil {
+// 		fmt.Fprintf(connTv, login)
+// 		loginRes, _ := network.Read(connTv)
+// 		if loginRes != "" {
+// 			fmt.Println(loginRes)
+// 		}
+// 		fmt.Fprintf(connTv, open)
+// 		openRes, _ := network.Read(connTv)
+// 		if openRes != "" {
+// 			fmt.Println(openRes)
+// 		}
+// 		fmt.Fprintf(connTv, unlock)
+// 		unlockRes, _ := network.Read(connTv)
+// 		if unlockRes != "" {
+// 			fmt.Println(unlockRes)
+// 		}
+// 		fmt.Fprintf(connTv, request)
+// 		response, _ := network.Read(connTv)
+// 		if response != "" {
+// 			fmt.Println(response)
+// 		}
+// 	}
+// }
+
+// func TestUploadFileToIPFS(t * testing.T) {
+// 	const request = `{"jsonrpc":"2.0","id":2,"method":"UploadFileToIPFS","params":["F:\\go\\src\\TVStorageManager\\README.md"]}`
+// 	connTv, err := network.ConnectTo("127.0.0.1:60000")
+// 	if err == nil {
+// 		fmt.Fprintf(connTv, request)
+// 		response, _ := network.Read(connTv)
+// 		if response != "" {
+// 			fmt.Println(response)
+// 		}
+// 	}
+// }
+
+// func TestPinAddFileToLocal(t * testing.T) {
+// 	const request = `{"jsonrpc":"2.0","id":2,"method":"PinAddFileToLocal","params":["QmQy7RRsJE6ueskwtTwzZNpPhSBksoZTBBqAxwhwjihNv7"]}`
+// 	connTv, err := network.ConnectTo("127.0.0.1:60000")
+// 	if err == nil {
+// 		fmt.Fprintf(connTv, request)
+// 		response, _ := network.Read(connTv)
+// 		if response != "" {
+// 			fmt.Println(response)
+// 		}
+// 	}
+// }
+
+func TestDownloadFileFromIPFS(t * testing.T) {
+	const request = `{"jsonrpc":"2.0","id":2,"method":"DownloadFileFromIPFS","params":["QmQy7RRsJE6ueskwtTwzZNpPhSBksoZTBBqAxwhwjihNv7"]}`
 	connTv, err := network.ConnectTo("127.0.0.1:60000")
 	if err == nil {
-		fmt.Fprintf(connTv, login)
-		loginRes, _ := network.Read(connTv)
-		if loginRes != "" {
-			fmt.Println(loginRes)
-		}
-		fmt.Fprintf(connTv, open)
-		openRes, _ := network.Read(connTv)
-		if openRes != "" {
-			fmt.Println(openRes)
-		}
-		fmt.Fprintf(connTv, unlock)
-		unlockRes, _ := network.Read(connTv)
-		if unlockRes != "" {
-			fmt.Println(unlockRes)
-		}
 		fmt.Fprintf(connTv, request)
 		response, _ := network.Read(connTv)
 		if response != "" {

@@ -29,7 +29,8 @@ func InitRpcInterFaces() {
 	rpcInterFaceTable["ListFileStoreRequest"] = RpcInterFace{"ListFileStoreRequest", ListFileStoreRequest, false}
 	rpcInterFaceTable["ConfirmFileSaved"] = RpcInterFace{"ConfirmFileSaved", ConfirmFileSaved, false}
 	rpcInterFaceTable["ListConfirmFileSaved"] = RpcInterFace{"ListConfirmFileSaved", ListConfirmFileSaved, false}
-
+	rpcInterFaceTable["DownloadFileFromIPFS"] = RpcInterFace{"DownloadFileFromIPFS", DownloadFileFromIPFS, false}
+	
 	// the tv rpc interface for pass through
 	rpcInterFaceTable["about"] = RpcInterFace{"about", RpcPassThrough, true}
 	rpcInterFaceTable["add_event_handler"] = RpcInterFace{"add_event_handler", RpcPassThrough, true}
@@ -405,5 +406,13 @@ func ListConfirmFileSaved(request *json.Json, tvConn net.Conn) (response string)
 		}
 	}
 	return response
+}
+
+func DownloadFileFromIPFS(request *json.Json, tvConn net.Conn)(response string) {
+	fmt.Println("DownloadFileFromIPFS called ")
+	params, _ := request.Get("params").Array()
+	fmt.Println(params[0].(string))
+	response = logic.DownloadFileToLocal(params[0].(string), tvConn)
+	return
 }
 

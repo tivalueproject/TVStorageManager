@@ -76,7 +76,7 @@ func PinAdd(hash string)(response string, stat_code int, err error) {
 
 
 //download file
-func Download(hash string, filepath string) (err error) {
+func Download(hash string) (response string, stat_code int, err error) {
     buf := new(bytes.Buffer) 
     r := multipart.NewWriter(buf)
     defer r.Close()
@@ -87,18 +87,15 @@ func Download(hash string, filepath string) (err error) {
     }
 
     var client http.Client
-    response, err := client.Do(request)
+    res, err := client.Do(request)
     if err != nil {
         panic(err)
     }
-
-    file, err := os.Create(filepath)
-    if err != nil {
-        panic(err)
-    }
-    defer file.Close()
-    io.Copy(file, response.Body)
-    return err
+    resbuf := new(bytes.Buffer) 
+    resbuf.ReadFrom(res.Body)
+    response = resbuf.String()
+    stat_code = res.StatusCode
+    return
 }
 
 
