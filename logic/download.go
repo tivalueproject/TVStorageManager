@@ -2,18 +2,13 @@ package logic
 
 import (
 	"net"
-	TVJson "TVStorageManager/json"	
+	"TVStorageManager/network"	
 )
 
-func ListSaveNodes(params []string, conn net.Conn)(response string) {
-	var strjson string
-	if params != nil {
-		strjson = TVJson.GenerateJsonString("blockchain_get_file_save_node", params)
-	}
- 	
-	resp := CallRpc(strjson, conn)
-	return resp
-}
+func ListSavedFile(jsonStr string, conn net.Conn) (resp string) {
+	response := network.CallRpc(jsonStr, conn)
+	return response
+ }
 
 // func GenerateDownloadValidation(params []string, conn net.Conn)(response string) {
 // 	var strjson string

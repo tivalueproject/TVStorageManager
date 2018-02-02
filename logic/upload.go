@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"os"
 	"net"
-	myjson "TVStorageManager/json"	
-	//"encoding/json"
+	myJson "TVStorageManager/json"	
+	"encoding/json"
 	"fmt"
-	"TVStorageManager/rpc"
+	"TVStorageManager/network"
 	"TVStorageManager/common"
 )
 
@@ -65,7 +65,7 @@ func UploadFileToIPFS(file_name string, conn net.Conn)(res string, err error) {
 	if 200 != stat_code {
 		panic(err)
 	}
-	result, _ := myjson.JsonParser([]byte(resp))
+	result, _ := myJson.JsonParser([]byte(resp))
 	if err != nil {
     	panic(err)
     }
@@ -78,13 +78,13 @@ func UploadFileToIPFS(file_name string, conn net.Conn)(res string, err error) {
 
 //
 func DeclareUploadFile(json_prc_str string, conn net.Conn) (res string, err error) {
-	tv_res := rpc.CallRpc(json_prc_str, conn)
+	tv_res := network.CallRpc(json_prc_str, conn)
 	return tv_res, nil
 }
 
 //list uploaded declaration
 func ListUploadDeclaration(json_rpc_str string, conn net.Conn)(res string, err error) {
-	tv_res := rpc.CallRpc(json_rpc_str, conn)
+	tv_res := network.CallRpc(json_rpc_str, conn)
 	return tv_res, nil
 }
 
@@ -94,7 +94,7 @@ func PinAddFileToLocal(hash string, conn net.Conn)(res string, err error) {
 	if 200 != stat_code {
 		panic(err)
 	}
-	result, _ := myjson.JsonParser([]byte(resp))
+	result, _ := myJson.JsonParser([]byte(resp))
 	if err != nil {
     	panic(err)
 	}
@@ -105,7 +105,7 @@ func PinAddFileToLocal(hash string, conn net.Conn)(res string, err error) {
 
 //declare piece saveds
 func DeclarePieceSaved(json_rpc_str string, conn net.Conn) (res string, err error) {
-	tv_res := rpc.CallRpc(json_rpc_str, conn)
+	tv_res := network.CallRpc(json_rpc_str, conn)
 	return tv_res, nil
 }
 
@@ -113,34 +113,62 @@ func DeclarePieceSaved(json_rpc_str string, conn net.Conn) (res string, err erro
 //list upload requests
 func ListUploadedRequests(conn net.Conn)(response string) {
 	strjson := "{\"jsonrpc\":\"2.0\",\"method\":\"list_upload_requests\",\"params\":\"[]\",\"id\":\"1\"}"
-	resp := rpc.CallRpc(strjson, conn)
+	resp := network.CallRpc(strjson, conn)
 	return resp
 }
 
 //save piece
 func SavePiece(params []string, conn net.Conn)(resp string) {
 	strjson := ""
-	return rpc.CallRpc(strjson, conn)
+	return network.CallRpc(strjson, conn)
 }
 
 //list store request
- func ListStoreRequest(conn net.Conn) {
-
- }
-
- //allow save
- func AllowSave(conn net.Conn) {
-
- }
-
- //list save declaration
- func ListSaveDeclaration(conn net.Conn) {
-
+func ListStoreRequest(jsonStr string, conn net.Conn) (resp string) {
+	var resJson string
+	fmt.Println("call before: ", jsonStr)
+	response := network.CallRpc(jsonStr, conn)
+	fmt.Println("call after: ", response)
+	res, _ := myJson.JsonParser([]byte(response))
+	if res != nil {
+		resArr, _ := res.Get("result").Array()
+		for i := 0; i < len(resArr); i++ {
+			resMapStr, _ := json.Marshal(resArr[i])
+			var storeRes common.StoreFileResult
+			json.Unmarshal(resMapStr, &storeRes)
+			fmt.Println("fileId: ", storeRes.FileId.FileId)
+			nodes := storeRes.Nodes
+			if (nodes != nil) {
+				for j := 0; j < len(nodes); j++ {
+					nodesStr, _ := json.Marshal(nodes[i])
+					var storeNode common.StoreNode
+					json.Unmarshal(nodesStr, &storeNode)
+					var s = make(map[string]interface{})
+					s["node"] = storeNode.NodeId
+					s["key"] = storeNode.NodeKey
+					result, _ := json.Marshal(s)
+					resJson = string(result)
+					fmt.Println("result: ", resJson)
+				}
+			}
+		}
+	}
+	return resJson
  }
 
  //confirm piece
- func ConfirmPiece(conn net.Conn) {
-
+ func ConfirmPieceSaved(jsonStr string, conn net.Conn) (resp string) {
+	var resJson string
+	response := network.CallRpc(jsonStr, conn)
+	res, _ := myJson.JsonParser([]byte(response))
+	if res != nil {
+		var s = make(map[string]interface{})
+		s["result"] = true
+		result, _ := json.Marshal(s)
+		resJson = string(result)
+		fmt.Println("result: ", resJson)
+	}
+	return resJson
  }
 
  

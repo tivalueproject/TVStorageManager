@@ -26,6 +26,7 @@ func InitRpcInterFaces() {
 	rpcInterFaceTable["PinAddFileToLocal"] = RpcInterFace{"PinAddFileToLocal", UploadFileToIPFS, false}
 	rpcInterFaceTable["DeclarePieceSaved"] = RpcInterFace{"DeclarePieceSaved", UploadFileToIPFS, false}
 	rpcInterFaceTable["DeclareUploadFile"] = RpcInterFace{"DeclareUploadFile", DeclareUploadFile, false}
+	rpcInterFaceTable["ListFileStoreRequest"] = RpcInterFace{"ListFileStoreRequest", ListFileStoreRequest, false}
 
 	// the tv rpc interface for pass through
 	rpcInterFaceTable["about"] = RpcInterFace{"about", RpcPassThrough, true}
@@ -283,6 +284,7 @@ func InitRpcInterFaces() {
 	rpcInterFaceTable["unlock"] = RpcInterFace{"unlock", RpcPassThrough, true}
 	rpcInterFaceTable["balance"] = RpcInterFace{"balance", RpcPassThrough, true}
 	rpcInterFaceTable["info"] = RpcInterFace{"info", RpcPassThrough, true}
+	rpcInterFaceTable["open"] = RpcInterFace{"open", RpcPassThrough, true}
 }
 
 
@@ -359,4 +361,20 @@ func DeclareUploadFile(request *json.Json, tvConn net.Conn)(response string) {
 
 	fmt.Println("DeclareUploadFile called ")
 	return
+}
+
+func ListFileStoreRequest(request *json.Json, tvConn net.Conn) (response string) {
+	fmt.Println("ListFileStoreRequest called ")
+	if request != nil {
+		//id := request.Get("id")
+		method, _ := request.Get("method").String()
+		params, _ := request.Get("params").Array()
+
+		if (method == "ListFileStoreRequest") {
+			requestStr := json.GenerateJsonString("blockchain_list_file_save_declare", params)
+			response = logic.ListStoreRequest(requestStr, tvConn)
+			fmt.Println(response)
+		}
+	}
+	return response
 }

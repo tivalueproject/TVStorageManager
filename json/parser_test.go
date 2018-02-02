@@ -43,3 +43,32 @@ func TestPaserJsonString(t * testing.T) {
 		fmt.Println("copies: ", reqInfo.Copies)
 	}
 }
+
+func TestPaserStoreRequestJsonString(t * testing.T) {
+	const jsonStream = `[{"file_id":{"file_id":"zxcmnbv65757","uploader":"TV8fvkrLJVDPhVB2AWAykJtZuG4UtCFLBDxV1SvNUWBfqduAjcDB"},"piece_id":"zxcmnbv65757","nodes":[{"node":"node_lyy2","key":"TV8mCM3p9wXr4wDAz93X2ceSkPmN5rCtZqZ3Df1c33562sRbceug"}]}]`
+	//fmt.Println("jsonString: ", jsonStream)
+	res, _ := JsonParser([]byte(jsonStream))
+	if res != nil {
+		resArr, _ := res.Array()
+		for i := 0; i < len(resArr); i++ {
+			resMapStr, _ := json.Marshal(resArr[i])
+			var storeRes common.StoreFileResult
+			json.Unmarshal(resMapStr, &storeRes)
+			fmt.Println("fileId: ", storeRes.FileId.FileId)
+			fmt.Println("nodes: ", storeRes.Nodes)
+			nodes := storeRes.Nodes
+			if (nodes != nil) {
+				for j := 0; j < len(nodes); j++ {
+					nodesStr, _ := json.Marshal(nodes[i])
+					var storeNode common.StoreNode
+					json.Unmarshal(nodesStr, &storeNode)
+					var s = make(map[string]interface{})
+					s["node"] = storeNode.NodeId
+					s["key"] = storeNode.NodeKey
+					result, _ := json.Marshal(s)
+					fmt.Println("result: ", string(result))
+				}
+			}
+		}
+	}
+}

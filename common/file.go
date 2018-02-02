@@ -37,3 +37,14 @@ type TVFileInfo struct {
 	NodeId      string   `json:"node_id"`
 }
 
+type StoreNode struct {
+	NodeId		string		`json:"node"`
+	NodeKey		string		`json:"key"`
+}
+
+type StoreFileResult struct {
+	FileId		RequestId		`json:"file_id"`
+	PieceId		string			`json:"piece_id"`
+	Nodes		[]StoreNode		`json:"nodes"`		  
+}
+
