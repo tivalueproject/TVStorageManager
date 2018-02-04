@@ -32,7 +32,7 @@ func StartRpcServer() {
 
   // Close the listener when the application closes.
   defer listener.Close()
-  fmt.Println(DefaultSocketConfig.rpcAddress)
+  // fmt.Println(DefaultSocketConfig.rpcAddress)
 
   for {
     // Listen for an incoming connection.

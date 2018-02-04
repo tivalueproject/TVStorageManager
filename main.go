@@ -4,20 +4,20 @@ import (
   "TVStorageManager/rpc"
   //"TVStorageManager/test"
   "time"
-  "fmt"
-  "os/exec"
+  //"fmt"
+  //"os/exec"
 )
 
 func main() {
 
 	// boot TV
-    tvCmd := exec.Command("Ti_Value_storage.exe", "--daemon", "--data-dir", "F:\\TiChain\\wallet\\test\\storage", "--rpcuser", "admin", "--rpcpassword", "btc123", "--rpcendpoint", "127.0.0.1:63695")
-    tvIn, _ := tvCmd.StdinPipe()
-    tvOut, _ := tvCmd.StdoutPipe()
-    tvCmd.Start()
-    fmt.Printf("starting Ti_Value, [PID] %d running...\n", tvCmd.Process.Pid)
-    tvIn.Close()
-    tvOut.Close()
+    // tvCmd := exec.Command("Ti_Value_storage.exe", "--daemon", "--data-dir", "F:\\TiChain\\wallet\\test\\storage", "--rpcuser", "admin", "--rpcpassword", "btc123", "--rpcendpoint", "127.0.0.1:63695")
+    // tvIn, _ := tvCmd.StdinPipe()
+    // tvOut, _ := tvCmd.StdoutPipe()
+    // tvCmd.Start()
+    // fmt.Printf("starting Ti_Value, [PID] %d running...\n", tvCmd.Process.Pid)
+    // tvIn.Close()
+    // tvOut.Close()
 
 	
 	// boot ipfs

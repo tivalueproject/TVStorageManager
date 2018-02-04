@@ -99,5 +99,25 @@ func Download(hash string) (response string, stat_code int, err error) {
 }
 
 
+//get node info
+func Id() (response string, err error) {
+    buf := new(bytes.Buffer) 
+    r := multipart.NewWriter(buf)
+    defer r.Close()
 
+    request, err := http.NewRequest("POST", "http://localhost:5001/api/v0/id", buf)
+    if err !=nil {
+        panic(err)
+    }
+
+    var client http.Client
+    res, err := client.Do(request)
+    if err != nil {
+        panic(err)
+    }
+    resbuf := new(bytes.Buffer) 
+    resbuf.ReadFrom(res.Body)
+    response = resbuf.String()
+    return
+}
 

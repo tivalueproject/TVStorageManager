@@ -294,16 +294,16 @@ func InitRpcInterFaces() {
 func RpcPassThrough(request *json.Json, tvConn net.Conn)(response string) {
 	
  	if request != nil {
-		//id := request.Get("id")
+		id, _ := request.Get("id").String()
 		method, _ := request.Get("method").String()
 		params, _ := request.Get("params").Array()
-	    fmt.Println("RpcPassThrough called :", method , "[")
-	    for i := 0; i < len(params); i++ {
-			fmt.Println( params[i])
-	    }
-		fmt.Println( "]")
+	    // fmt.Println("RpcPassThrough called :", method , "[")
+	    // for i := 0; i < len(params); i++ {
+		// 	fmt.Println( params[i])
+	    // }
+		// fmt.Println( "]")
 
-	    requestStr := json.GenerateJsonString(method, params)
+	    requestStr := json.GenerateJsonRpcString(id, method, params)
 	    response = network.CallRpc(requestStr, tvConn)
 	    fmt.Println(response)
 	}
@@ -314,29 +314,24 @@ func UploadFileToIPFS(request *json.Json, tvConn net.Conn)(response string) {
 	fmt.Println("UploadFileToIPFS called ")
 	params, _ := request.Get("params").Array()
 	response, _ = logic.UploadFileToIPFS(params[0].(string), tvConn)
+	fmt.Println(response)
 	return
 }
 
 func DeclareUploadFile(request *json.Json, tvConn net.Conn)(response string) {
 	fmt.Println("DeclareUploadFile called ")
-	method, _ := request.Get("method").String()
 	params, _ := request.Get("params").Array()
-	if method == "DeclareUploadFile" {
-		method = "store_file_to_network"
-	}
-	requestStr := json.GenerateJsonString(method, params)
+	requestStr := json.GenerateJsonString("store_file_to_network", params)
 	response, _ = logic.DeclareUploadFile(requestStr, tvConn)
+	fmt.Println(response)
 	return
 }
 
 func ListUploadDeclaration(request *json.Json, tvConn net.Conn)(response string) {
 	fmt.Println("ListUploadDeclaration called ")
-	method, _ := request.Get("method").String()
 	params, _ := request.Get("params").Array()
-	if method == "ListUploadDeclaration" {
-		method = "blockchain_get__upload_requests"
-	}
-	requestStr := json.GenerateJsonString(method, params)
+
+	requestStr := json.GenerateJsonString("blockchain_get__upload_requests", params)
 	response, _ = logic.DeclareUploadFile(requestStr, tvConn)
 	return
 }
@@ -350,12 +345,9 @@ func PinAddFileToLocal(request *json.Json, tvConn net.Conn)(response string) {
 
 func DeclarePieceSaved(request *json.Json, tvConn net.Conn)(response string) {
 	fmt.Println("DeclarePieceSaved called ")
-	method, _ := request.Get("method").String()
 	params, _ := request.Get("params").Array()
-	if method == "DeclarePieceSaved" {
-		method = "declare_piece_saved"
-	}
-	requestStr := json.GenerateJsonString(method, params)
+
+	requestStr := json.GenerateJsonString("declare_piece_saved", params)
 	response, _ = logic.DeclarePieceSaved(requestStr, tvConn)
 	return
 }
@@ -364,14 +356,11 @@ func ListFileStoreRequest(request *json.Json, tvConn net.Conn) (response string)
 	fmt.Println("ListFileStoreRequest called ")
 	if request != nil {
 		//id := request.Get("id")
-		method, _ := request.Get("method").String()
 		params, _ := request.Get("params").Array()
 
-		if (method == "ListFileStoreRequest") {
-			requestStr := json.GenerateJsonString("blockchain_list_file_save_declare", params)
-			response = logic.ListStoreRequest(requestStr, tvConn)
-			//fmt.Println(response)
-		}
+		requestStr := json.GenerateJsonString("blockchain_list_file_save_declare", params)
+		response = logic.ListStoreRequest(requestStr, tvConn)
+		//fmt.Println(response)
 	}
 	return response
 }
@@ -380,14 +369,12 @@ func ConfirmFileSaved(request *json.Json, tvConn net.Conn) (response string) {
 	fmt.Println("ConfirmFileSaved called ")
 	if request != nil {
 		//id := request.Get("id")
-		method, _ := request.Get("method").String()
+
 		params, _ := request.Get("params").Array()
 
-		if (method == "ConfirmFileSaved") {
-			requestStr := json.GenerateJsonString("confirm_piece_saved", params)
-			response = logic.ConfirmPieceSaved(requestStr, tvConn)
-			fmt.Println(response)
-		}
+		requestStr := json.GenerateJsonString("confirm_piece_saved", params)
+		response = logic.ConfirmPieceSaved(requestStr, tvConn)
+		fmt.Println(response)
 	}
 	return response
 }
@@ -396,14 +383,11 @@ func ListConfirmFileSaved(request *json.Json, tvConn net.Conn) (response string)
 	fmt.Println("ListConfirmFileSaved called ")
 	if request != nil {
 		//id := request.Get("id")
-		method, _ := request.Get("method").String()
 		params, _ := request.Get("params").Array()
 
-		if (method == "ListConfirmFileSaved") {
-			requestStr := json.GenerateJsonString("blockchain_list_file_saved", params)
-			response = logic.ListConfirmSavedFile(requestStr, tvConn)
-			fmt.Println(response)
-		}
+		requestStr := json.GenerateJsonString("blockchain_list_file_saved", params)
+		response = logic.ListConfirmSavedFile(requestStr, tvConn)
+		fmt.Println(response)	
 	}
 	return response
 }

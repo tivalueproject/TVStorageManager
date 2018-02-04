@@ -78,6 +78,7 @@ func UploadFileToIPFS(file_name string, conn net.Conn)(res string, err error) {
 
 //
 func DeclareUploadFile(json_prc_str string, conn net.Conn) (res string, err error) {
+
 	tv_res := network.CallRpc(json_prc_str, conn)
 	return tv_res, nil
 }
@@ -167,4 +168,15 @@ func ListStoreRequest(jsonStr string, conn net.Conn) (resp string) {
 	return resJson
  }
 
- 
+ //get local node id
+func GetLocalNodeId()(res string, err error) {
+	resp, err := Id()
+
+	result, _ := myJson.JsonParser([]byte(resp))
+	if err != nil {
+    	panic(err)
+	}
+	nodeId, _ := result.Get("ID").String()
+	res = "{\"id\":\"" + nodeId + "\"}"
+	return res, nil
+}
