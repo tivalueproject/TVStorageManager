@@ -112,3 +112,11 @@ func GenerateJsonRpcString(id string, method string, params interface{}) string 
 	result, _ := json.Marshal(s)
 	return string(result)
 }
+
+func GenerateJsonRpcResult(id string, result interface{}) string {
+	var s = make(map[string]interface{})
+	s["id"] = id
+	s["result"] = result
+	resultBytes, _ := json.Marshal(s)
+	return string(resultBytes)
+}

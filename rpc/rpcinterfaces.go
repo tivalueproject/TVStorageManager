@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"fmt"
-	"TVStorageManager/json"
+	myJson "TVStorageManager/json"
 	"net"
 	"TVStorageManager/logic"
 	"TVStorageManager/network"
@@ -12,7 +12,7 @@ import (
 // passThroughTable
 type RpcInterFace struct {
 	Method      	string
-	Func 			func(request *json.Json, tvConn net.Conn)(response string)
+	Func 			func(request *myJson.Json, tvConn net.Conn)(response string)
 	IsPassThrough	bool
 }
 
@@ -22,13 +22,7 @@ func InitRpcInterFaces() {
 	rpcInterFaceTable = make(map[string]RpcInterFace)
 
 	rpcInterFaceTable["UploadFileToIPFS"] = RpcInterFace{"UploadFileToIPFS", UploadFileToIPFS, false}
-	rpcInterFaceTable["DeclareUploadFile"] = RpcInterFace{"DeclareUploadFile", DeclareUploadFile, false}
-	rpcInterFaceTable["ListUploadDeclaration"] = RpcInterFace{"ListUploadDeclaration", ListUploadDeclaration, false}
 	rpcInterFaceTable["PinAddFileToLocal"] = RpcInterFace{"PinAddFileToLocal", PinAddFileToLocal, false}
-	rpcInterFaceTable["DeclarePieceSaved"] = RpcInterFace{"DeclarePieceSaved", DeclarePieceSaved, false}
-	rpcInterFaceTable["ListFileStoreRequest"] = RpcInterFace{"ListFileStoreRequest", ListFileStoreRequest, false}
-	rpcInterFaceTable["ConfirmFileSaved"] = RpcInterFace{"ConfirmFileSaved", ConfirmFileSaved, false}
-	rpcInterFaceTable["ListConfirmFileSaved"] = RpcInterFace{"ListConfirmFileSaved", ListConfirmFileSaved, false}
 	rpcInterFaceTable["DownloadFileFromIPFS"] = RpcInterFace{"DownloadFileFromIPFS", DownloadFileFromIPFS, false}
 	
 	// the tv rpc interface for pass through
@@ -282,16 +276,24 @@ func InitRpcInterFaces() {
 	rpcInterFaceTable["wallet_verify_titan_deposit"] = RpcInterFace{"wallet_verify_titan_deposit", RpcPassThrough, true}
 	rpcInterFaceTable["wallet_withdraw_from_address"] = RpcInterFace{"wallet_withdraw_from_address", RpcPassThrough, true}
 
+	//new interface for storage
+	rpcInterFaceTable["wallet_list_my_upload_requests"] = RpcInterFace{"wallet_list_my_upload_requests", RpcPassThrough, true}
+	rpcInterFaceTable["blockchain_list_file_saved_info"] = RpcInterFace{"blockchain_list_file_saved_info", RpcPassThrough, true}
+	rpcInterFaceTable["blockchain_list_can_apply_file"] = RpcInterFace{"blockchain_list_can_apply_file", RpcPassThrough, true}
+	rpcInterFaceTable["wallet_list_my_declared_file"] = RpcInterFace{"wallet_list_my_declared_file", RpcPassThrough, true}
+
 	// abbreviation
 	rpcInterFaceTable["login"] = RpcInterFace{"login", RpcPassThrough, true}
 	rpcInterFaceTable["unlock"] = RpcInterFace{"unlock", RpcPassThrough, true}
 	rpcInterFaceTable["balance"] = RpcInterFace{"balance", RpcPassThrough, true}
 	rpcInterFaceTable["info"] = RpcInterFace{"info", RpcPassThrough, true}
 	rpcInterFaceTable["open"] = RpcInterFace{"open", RpcPassThrough, true}
+	rpcInterFaceTable["create"] = RpcInterFace{"create", RpcPassThrough, true}
+	rpcInterFaceTable["lock"] = RpcInterFace{"lock", RpcPassThrough, true}
 }
 
 
-func RpcPassThrough(request *json.Json, tvConn net.Conn)(response string) {
+func RpcPassThrough(request *myJson.Json, tvConn net.Conn)(response string) {
 	
  	if request != nil {
 		id, _ := request.Get("id").String()
@@ -303,100 +305,41 @@ func RpcPassThrough(request *json.Json, tvConn net.Conn)(response string) {
 	    // }
 		// fmt.Println( "]")
 
-	    requestStr := json.GenerateJsonRpcString(id, method, params)
+	    requestStr := myJson.GenerateJsonRpcString(id, method, params)
 	    response = network.CallRpc(requestStr, tvConn)
 	    fmt.Println(response)
 	}
 	return
 }
 
-func UploadFileToIPFS(request *json.Json, tvConn net.Conn)(response string) {
+func UploadFileToIPFS(request *myJson.Json, tvConn net.Conn)(response string) {
 	fmt.Println("UploadFileToIPFS called ")
+	id, _ := request.Get("id").String()
 	params, _ := request.Get("params").Array()
-	response, _ = logic.UploadFileToIPFS(params[0].(string), tvConn)
+	result, _ := logic.UploadFileToIPFS(params[0].(string), tvConn)
+	response = myJson.GenerateJsonRpcResult(id, result)
 	fmt.Println(response)
 	return
 }
 
-func DeclareUploadFile(request *json.Json, tvConn net.Conn)(response string) {
-	fmt.Println("DeclareUploadFile called ")
-	params, _ := request.Get("params").Array()
-	requestStr := json.GenerateJsonString("store_file_to_network", params)
-	response, _ = logic.DeclareUploadFile(requestStr, tvConn)
-	fmt.Println(response)
-	return
-}
-
-func ListUploadDeclaration(request *json.Json, tvConn net.Conn)(response string) {
-	fmt.Println("ListUploadDeclaration called ")
-	params, _ := request.Get("params").Array()
-
-	requestStr := json.GenerateJsonString("blockchain_get__upload_requests", params)
-	response, _ = logic.DeclareUploadFile(requestStr, tvConn)
-	return
-}
-
-func PinAddFileToLocal(request *json.Json, tvConn net.Conn)(response string) {
+func PinAddFileToLocal(request *myJson.Json, tvConn net.Conn)(response string) {
 	fmt.Println("PinAddFileToLocal called ")
+	id, _ := request.Get("id").String()
 	params, _ := request.Get("params").Array()
-	response, _ = logic.PinAddFileToLocal(params[0].(string), tvConn)
+	result, _ := logic.PinAddFileToLocal(params[0].(string), tvConn)
+	response = myJson.GenerateJsonRpcResult(id, result)
+	fmt.Println(response)
 	return
 }
 
-func DeclarePieceSaved(request *json.Json, tvConn net.Conn)(response string) {
-	fmt.Println("DeclarePieceSaved called ")
-	params, _ := request.Get("params").Array()
-
-	requestStr := json.GenerateJsonString("declare_piece_saved", params)
-	response, _ = logic.DeclarePieceSaved(requestStr, tvConn)
-	return
-}
-
-func ListFileStoreRequest(request *json.Json, tvConn net.Conn) (response string) {
-	fmt.Println("ListFileStoreRequest called ")
-	if request != nil {
-		//id := request.Get("id")
-		params, _ := request.Get("params").Array()
-
-		requestStr := json.GenerateJsonString("blockchain_list_file_save_declare", params)
-		response = logic.ListStoreRequest(requestStr, tvConn)
-		//fmt.Println(response)
-	}
-	return response
-}
-
-func ConfirmFileSaved(request *json.Json, tvConn net.Conn) (response string) {
-	fmt.Println("ConfirmFileSaved called ")
-	if request != nil {
-		//id := request.Get("id")
-
-		params, _ := request.Get("params").Array()
-
-		requestStr := json.GenerateJsonString("confirm_piece_saved", params)
-		response = logic.ConfirmPieceSaved(requestStr, tvConn)
-		fmt.Println(response)
-	}
-	return response
-}
-
-func ListConfirmFileSaved(request *json.Json, tvConn net.Conn) (response string) {
-	fmt.Println("ListConfirmFileSaved called ")
-	if request != nil {
-		//id := request.Get("id")
-		params, _ := request.Get("params").Array()
-
-		requestStr := json.GenerateJsonString("blockchain_list_file_saved", params)
-		response = logic.ListConfirmSavedFile(requestStr, tvConn)
-		fmt.Println(response)	
-	}
-	return response
-}
-
-func DownloadFileFromIPFS(request *json.Json, tvConn net.Conn)(response string) {
+func DownloadFileFromIPFS(request *myJson.Json, tvConn net.Conn)(response string) {
 	fmt.Println("DownloadFileFromIPFS called ")
+	id, _ := request.Get("id").String()
 	params, _ := request.Get("params").Array()
 	fmt.Println(params[0].(string))
-	response = logic.DownloadFileToLocal(params[0].(string), tvConn)
+	result := logic.DownloadFileToLocal(params[0].(string), params[1].(string), tvConn)
+	response = myJson.GenerateJsonRpcResult(id, result)
+	fmt.Println(response)
 	return
 }
 

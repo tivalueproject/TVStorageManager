@@ -1,14 +1,12 @@
 package logic
 
 import (
-	"strconv"
+	// "strconv"
 	"os"
 	"net"
-	myJson "TVStorageManager/json"	
-	"encoding/json"
+	myJson "TVStorageManager/json"
 	"fmt"
 	"TVStorageManager/network"
-	"TVStorageManager/common"
 )
 
 
@@ -60,7 +58,7 @@ func Slice(filename string, pieces int) {
 }
 
 //upload file to local ipfs
-func UploadFileToIPFS(file_name string, conn net.Conn)(res string, err error) {
+func UploadFileToIPFS(file_name string, conn net.Conn)(res interface{}, err error) {
 	resp, stat_code, err := Upload(file_name)
 	if 200 != stat_code {
 		panic(err)
@@ -72,101 +70,43 @@ func UploadFileToIPFS(file_name string, conn net.Conn)(res string, err error) {
 	name, _ := result.Get("Name").String()
 	hash, _ := result.Get("Hash").String()
 	size, _ := result.Get("Size").String()
-	res = "{\"id\":\"1\",\"file_name\":\"" + name + "\",\"file_hash\":\"" + hash + "\",\"file_size\":\"" + size + "\",status_code:\"" + strconv.Itoa(stat_code) + "\"}"
+	// res = "{\"id\":\"1\",\"file_name\":\"" + name + "\",\"file_hash\":\"" + hash + "\",\"file_size\":\"" + size + "\",\"status_code\":\"" + strconv.Itoa(stat_code) + "\"}"
+	var s = make(map[string]interface{})
+	s["id"] = "1"
+	s["file_name"] = name
+	s["file_hash"] = hash
+	s["file_size"] = size
+	s["status_code"] = stat_code
+	res = s
 	return res, nil
 }
 
-//
-func DeclareUploadFile(json_prc_str string, conn net.Conn) (res string, err error) {
-
-	tv_res := network.CallRpc(json_prc_str, conn)
-	return tv_res, nil
-}
-
-//list uploaded declaration
-func ListUploadDeclaration(json_rpc_str string, conn net.Conn)(res string, err error) {
-	tv_res := network.CallRpc(json_rpc_str, conn)
-	return tv_res, nil
-}
 
 //pin file to local
-func PinAddFileToLocal(hash string, conn net.Conn)(res string, err error) {
-	resp, stat_code, err := PinAdd(hash)
-	if 200 != stat_code {
-		panic(err)
-	}
+func PinAddFileToLocal(hash string, conn net.Conn)(res interface{}, err error) {
+	resp, err := PinAdd(hash)
 	result, _ := myJson.JsonParser([]byte(resp))
 	if err != nil {
     	panic(err)
 	}
 	obj, _ := result.Get("Pins").String()
-	res = "{\"id\":\"1\",\"pins\":\"" + obj + "\""+ ",\"status_code\":\"" + strconv.Itoa(stat_code) + "\"}"
+	// res = "{\"id\":\"1\",\"pins\":\"" + obj + "\""+ ",\"status_code\":\"" + strconv.Itoa(stat_code) + "\"}"
+	if obj != "" {
+		var s = make(map[string]interface{})
+		s["Pins"] = obj
+		s["status_code"] = 200
+		res = s
+	}
 	return res, nil
 }
 
-//declare piece saveds
-func DeclarePieceSaved(json_rpc_str string, conn net.Conn) (res string, err error) {
-	tv_res := network.CallRpc(json_rpc_str, conn)
-	return tv_res, nil
-}
-
-
 //list upload requests
 func ListUploadedRequests(conn net.Conn)(response string) {
-	strjson := "{\"jsonrpc\":\"2.0\",\"method\":\"list_upload_requests\",\"params\":\"[]\",\"id\":\"1\"}"
+	// strjson := "{\"jsonrpc\":\"2.0\",\"method\":\"list_upload_requests\",\"params\":\"[]\",\"id\":\"1\"}"
+	strjson := myJson.GenerateJsonString("list_upload_requests","[]")
 	resp := network.CallRpc(strjson, conn)
 	return resp
 }
-
-//save piece
-func SavePiece(params []string, conn net.Conn)(resp string) {
-	strjson := ""
-	return network.CallRpc(strjson, conn)
-}
-
-//list store request
-func ListStoreRequest(jsonStr string, conn net.Conn) (resp string) {
-	var resJson string
-	response := network.CallRpc(jsonStr, conn)
-	res, _ := myJson.JsonParser([]byte(response))
-	if res != nil {
-		resArr, _ := res.Get("result").Array()
-		for i := 0; i < len(resArr); i++ {
-			resMapStr, _ := json.Marshal(resArr[i])
-			var storeRes common.StoreFileResult
-			json.Unmarshal(resMapStr, &storeRes)
-			nodes := storeRes.Nodes
-			if (nodes != nil) {
-				for j := 0; j < len(nodes); j++ {
-					nodesStr, _ := json.Marshal(nodes[i])
-					var storeNode common.StoreNode
-					json.Unmarshal(nodesStr, &storeNode)
-					var s = make(map[string]interface{})
-					s["node"] = storeNode.NodeId
-					s["key"] = storeNode.NodeKey
-					result, _ := json.Marshal(s)
-					resJson = string(result)
-				}
-			}
-		}
-	}
-	return resJson
- }
-
- //confirm piece
- func ConfirmPieceSaved(jsonStr string, conn net.Conn) (resp string) {
-	var resJson string
-	response := network.CallRpc(jsonStr, conn)
-	res, _ := myJson.JsonParser([]byte(response))
-	if res != nil {
-		var s = make(map[string]interface{})
-		s["result"] = true
-		result, _ := json.Marshal(s)
-		resJson = string(result)
-		fmt.Println("result: ", resJson)
-	}
-	return resJson
- }
 
  //get local node id
 func GetLocalNodeId()(res string, err error) {
